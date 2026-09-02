@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens — "research note" identity.
+ *
+ * Grounded in the brief's own language ("financial research", "don't
+ * overpay, ask first"): a warm, pale editorial paper — closer to the tint
+ * of a stock research note than a generic warm-cream default — paired with
+ * a cool, confident ink-navy for trust and contrast. One accent, used
+ * sparingly (links, the primary action, focus rings). The five decision
+ * states are a separate, functional color system, each additionally
+ * carried by a distinct hand-drawn glyph (see DecisionBadge) so meaning
+ * never rests on color alone.
+ *
+ * Type: a restrained serif carries headlines (editorial authority, used at
+ * generous size, normal weight — not another bold display cliché); a
+ * humanist sans carries everything functional — labels, buttons, prices
+ * (tabular figures). No monospace anywhere in the UI chrome.
+ */
+:root {
+  --paper: #f7ece4;
+  --surface: #ffffff;
+  --ink: #1b1b1f;
+  --ink-muted: #6b6560;
+  --hairline: #e4d8cf;
+
+  --accent: #1f2d50;
+  --accent-soft: #e7eaf1;
+
+  --decision-buy: #1b7a4a;
+  --decision-buy-soft: #e3f1e8;
+  --decision-wait: #9c6b0a;
+  --decision-wait-soft: #f7edd9;
+  --decision-skip: #565863;
+  --decision-skip-soft: #eaeaee;
+  --decision-avoid: #a63636;
+  --decision-avoid-soft: #f7e3e1;
+  --decision-unknown: #7a746e;
+  --decision-unknown-soft: #efece7;
+
+  --font-serif: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+  --font-sans: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-hairline: var(--hairline);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-decision-buy: var(--decision-buy);
+  --color-decision-buy-soft: var(--decision-buy-soft);
+  --color-decision-wait: var(--decision-wait);
+  --color-decision-wait-soft: var(--decision-wait-soft);
+  --color-decision-skip: var(--decision-skip);
+  --color-decision-skip-soft: var(--decision-skip-soft);
+  --color-decision-avoid: var(--decision-avoid);
+  --color-decision-avoid-soft: var(--decision-avoid-soft);
+  --color-decision-unknown: var(--decision-unknown);
+  --color-decision-unknown-soft: var(--decision-unknown-soft);
+  --font-serif: var(--font-serif);
+  --font-sans: var(--font-sans);
+}
+
+* {
+  border-color: var(--hairline);
+}
+
+body {
+  background-color: var(--paper);
+  color: var(--ink);
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
