@@ -1,4 +1,4 @@
-# Rigcheck — AI Purchasing Decision Engine (MVP)
+# Cevra — AI Purchasing Decision Engine (MVP)
 
 > Don't just help users find products. Help them avoid making bad purchases.
 
