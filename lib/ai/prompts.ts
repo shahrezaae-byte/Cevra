@@ -103,14 +103,20 @@ Rules:
 
 Output shape:
 {
-  "category": "cpu" | "motherboard" | "ram" | "gpu" | "psu" | "storage" | "laptop" | "audio" | "other" | undefined,
-  "productHint": string | undefined,
-  "budget": number | undefined,
-  "currency": string (3-letter code) | undefined,
-  "useCase": string | undefined,
-  "existingComponents": [{ "category": "...", "name": "..." }] | undefined,
-  "missingInformation": [string] | undefined
-}`;
+  "category": "cpu" | "motherboard" | "ram" | "gpu" | "psu" | "storage" | "laptop" | "audio" | "other",
+  "productHint": string,
+  "budget": number,
+  "currency": string,
+  "useCase": string,
+  "existingComponents": [{ "category": "...", "name": "..." }],
+  "missingInformation": [string]
+}
+
+Only include fields that are actually known.
+Never output undefined.
+Never output null.
+Omit unknown or inapplicable fields.
+Return valid JSON only.`;
 
 export function buildExtractShopRequirementsPrompt(rawQuery: string): string {
   return `User request: "${rawQuery}"\n\nExtract the structured shopping requirements as instructed.`;

@@ -19,35 +19,72 @@ export default function Home() {
 
   return (
     <main className="flex flex-1 items-center">
-      <div className="mx-auto w-full max-w-2xl px-6 py-20">
-        <div className="flex flex-col items-center gap-6 text-center">
-          <h1 className="font-serif text-5xl leading-[1.1] tracking-tight text-ink sm:text-6xl">
+      <div className="mx-auto w-full max-w-4xl px-6 py-16 sm:py-24">
+        <section className="mx-auto max-w-3xl text-center">
+          <div className="mb-8">
+            <p className="text-xs font-medium uppercase tracking-[0.28em] text-ink-muted">
+              CEVRA
+            </p>
+          </div>
+
+          <h1 className="font-serif text-5xl leading-[1.02] tracking-[-0.03em] text-ink sm:text-7xl">
             Don&apos;t overpay.
             <br />
-            Ask first.
+            <span className="text-ink-muted">Ask first.</span>
           </h1>
-          <p className="max-w-md text-lg leading-relaxed text-ink-muted">
-            Tell us what you&apos;re looking for. We&apos;ll research the market and tell you what
-            to buy.
+
+          <p className="mx-auto mt-7 max-w-xl text-base leading-7 text-ink-muted sm:text-lg">
+            CEVRA researches real listings, compares the market, and gives you
+            one clear answer before you buy.
           </p>
-        </div>
 
-        <div className="mt-10">
-          <SearchBox onSubmit={handleSubmit} />
-        </div>
+          <div className="mx-auto mt-10 max-w-2xl">
+            <SearchBox onSubmit={handleSubmit} />
+          </div>
 
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-x-2 gap-y-3">
-          <span className="text-sm text-ink-muted">Try asking</span>
-          {EXAMPLES.map((example) => (
-            <button
-              key={example}
-              onClick={() => handleSubmit(example)}
-              className="border border-hairline px-3 py-1.5 text-sm text-ink-muted transition-colors hover:border-accent hover:text-ink"
-            >
-              {example}
-            </button>
-          ))}
-        </div>
+          <div className="mt-7">
+            <p className="mb-3 text-xs font-medium uppercase tracking-[0.18em] text-ink-muted">
+              Try asking CEVRA
+            </p>
+
+            <div className="flex flex-wrap justify-center gap-2">
+              {EXAMPLES.map((example) => (
+                <button
+                  key={example}
+                  onClick={() => handleSubmit(example)}
+                  className="border border-hairline bg-white/40 px-4 py-2 text-sm text-ink-muted transition-all duration-200 hover:border-ink hover:bg-white hover:text-ink"
+                >
+                  {example}
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="mx-auto mt-20 max-w-3xl border-y border-hairline py-8">
+          <div className="grid gap-8 text-center sm:grid-cols-3 sm:gap-4">
+            <div>
+              <p className="font-serif text-xl text-ink">Research</p>
+              <p className="mt-1 text-sm text-ink-muted">
+                Real listings, not guesses.
+              </p>
+            </div>
+
+            <div className="border-y border-hairline py-6 sm:border-x sm:border-y-0 sm:py-0">
+              <p className="font-serif text-xl text-ink">Compare</p>
+              <p className="mt-1 text-sm text-ink-muted">
+                See what the market says.
+              </p>
+            </div>
+
+            <div>
+              <p className="font-serif text-xl text-ink">Decide</p>
+              <p className="mt-1 text-sm text-ink-muted">
+                BUY, WAIT, SKIP, or AVOID.
+              </p>
+            </div>
+          </div>
+        </section>
       </div>
     </main>
   );

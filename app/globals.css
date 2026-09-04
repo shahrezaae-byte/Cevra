@@ -1,44 +1,28 @@
 @import "tailwindcss";
 
-/*
- * Design tokens — "research note" identity.
- *
- * Grounded in the brief's own language ("financial research", "don't
- * overpay, ask first"): a warm, pale editorial paper — closer to the tint
- * of a stock research note than a generic warm-cream default — paired with
- * a cool, confident ink-navy for trust and contrast. One accent, used
- * sparingly (links, the primary action, focus rings). The five decision
- * states are a separate, functional color system, each additionally
- * carried by a distinct hand-drawn glyph (see DecisionBadge) so meaning
- * never rests on color alone.
- *
- * Type: a restrained serif carries headlines (editorial authority, used at
- * generous size, normal weight — not another bold display cliché); a
- * humanist sans carries everything functional — labels, buttons, prices
- * (tabular figures). No monospace anywhere in the UI chrome.
- */
 :root {
-  --paper: #f7ece4;
-  --surface: #ffffff;
-  --ink: #1b1b1f;
-  --ink-muted: #6b6560;
-  --hairline: #e4d8cf;
+  --paper: #0b0d10;
+  --surface: #12151a;
+  --ink: #f3f4f6;
+  --ink-muted: #9298a3;
+  --hairline: #252a32;
 
-  --accent: #1f2d50;
-  --accent-soft: #e7eaf1;
+  --accent: #8ea8ff;
+  --accent-soft: #1a2133;
 
-  --decision-buy: #1b7a4a;
-  --decision-buy-soft: #e3f1e8;
-  --decision-wait: #9c6b0a;
-  --decision-wait-soft: #f7edd9;
-  --decision-skip: #565863;
-  --decision-skip-soft: #eaeaee;
-  --decision-avoid: #a63636;
-  --decision-avoid-soft: #f7e3e1;
-  --decision-unknown: #7a746e;
-  --decision-unknown-soft: #efece7;
+  --decision-buy: #55c98a;
+  --decision-buy-soft: #13271d;
+  --decision-wait: #d8aa4b;
+  --decision-wait-soft: #2a2314;
+  --decision-skip: #9da3ae;
+  --decision-skip-soft: #20232a;
+  --decision-avoid: #ef6b6b;
+  --decision-avoid-soft: #2b1719;
+  --decision-unknown: #9a9fa8;
+  --decision-unknown-soft: #202328;
 
-  --font-serif: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+  --font-serif: Georgia, "Iowan Old Style", "Palatino Linotype",
+    "Book Antiqua", serif;
   --font-sans: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 }
 
@@ -50,6 +34,7 @@
   --color-hairline: var(--hairline);
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
+
   --color-decision-buy: var(--decision-buy);
   --color-decision-buy-soft: var(--decision-buy-soft);
   --color-decision-wait: var(--decision-wait);
@@ -60,12 +45,17 @@
   --color-decision-avoid-soft: var(--decision-avoid-soft);
   --color-decision-unknown: var(--decision-unknown);
   --color-decision-unknown-soft: var(--decision-unknown-soft);
+
   --font-serif: var(--font-serif);
   --font-sans: var(--font-sans);
 }
 
 * {
   border-color: var(--hairline);
+}
+
+html {
+  background-color: var(--paper);
 }
 
 body {
@@ -77,8 +67,15 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;

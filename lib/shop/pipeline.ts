@@ -190,20 +190,9 @@ export async function runShopAnalysis(rawQuery: string): Promise<ShopResult> {
       effectivePrices: effectivePricesForPrompt,
     });
   } catch (err) {
-    aiRecommendation = undefined;
-    allIssues.push({
-      involving: ["ai-comparison"],
-      result: {
-        compatible: true,
-        confidence: "low",
-        reasons: [
-          err instanceof AiIntegrationError
-            ? err.message
-            : "AI comparison was unavailable; showing deterministic ranking only.",
-        ],
-      },
-    });
-  }
+  console.error("AI deal comparison failed:", err);
+  aiRecommendation = undefined;
+}
 
   const viableScores = dealScores.filter((s) => !eliminatedIds.has(s.productId));
   const bestDealScore = [...viableScores].sort((a, b) => b.total - a.total)[0];

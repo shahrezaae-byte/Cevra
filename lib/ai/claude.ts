@@ -20,7 +20,7 @@ import {
 import type { Product } from "@/types/product";
 
 const MODEL = "claude-sonnet-4-6";
-const MAX_TOKENS = 1500;
+const MAX_TOKENS = 2000;
 
 export class AiIntegrationError extends Error {
   constructor(message: string, readonly cause?: unknown) {
@@ -31,15 +31,14 @@ export class AiIntegrationError extends Error {
 
 function getClient(): Anthropic {
   const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    throw new AiIntegrationError("ANTHROPIC_API_KEY is not configured on the server.");
-  }
-  return new Anthropic({ apiKey });
-}
 
-/** Strip a ```json fence if Claude adds one despite instructions not to. */
-function stripCodeFence(text: string): string {
-  return text.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```\s*$/i, "").trim();
+  if (!apiKey) {
+    throw new AiIntegrationError(
+      "ANTHROPIC_API_KEY is not configured on the server.",
+    );
+  }
+
+  return new Anthropic({ apiKey });
 }
 
 function extractText(message: Anthropic.Messages.Message): string {
@@ -52,36 +51,66 @@ function extractText(message: Anthropic.Messages.Message): string {
 async function callJsonModel<T>(
   system: string,
   userPrompt: string,
-  schema: z.ZodType<T>
+  schema: z.ZodType<T>,
 ): Promise<T> {
   const client = getClient();
 
   let message: Anthropic.Messages.Message;
+
   try {
     message = await client.messages.create({
       model: MODEL,
       max_tokens: MAX_TOKENS,
       system,
-      messages: [{ role: "user", content: userPrompt }],
+      messages: [
+        {
+          role: "user",
+          content: userPrompt,
+        },
+      ],
     });
   } catch (err) {
-    throw new AiIntegrationError("The AI reasoning service is unavailable right now.", err);
+    throw new AiIntegrationError(
+      "The AI reasoning service is unavailable right now.",
+      err,
+    );
   }
 
-  const raw = stripCodeFence(extractText(message));
+  const raw = extractText(message).trim();
+
+  if (!raw) {
+    throw new AiIntegrationError(
+      "The AI returned an empty response.",
+    );
+  }
 
   let parsedJson: unknown;
-  try {
-    parsedJson = JSON.parse(raw);
-  } catch (err) {
-    throw new AiIntegrationError("The AI returned a response we couldn't parse.", err);
-  }
 
+try {
+  parsedJson = JSON.parse(raw);
+} catch (err) {
+  console.error("========== CEVRA AI JSON ERROR ==========");
+  console.error("RAW CLAUDE RESPONSE:");
+  console.error(raw);
+  console.error("=========================================");
+
+  throw new AiIntegrationError(
+    "The AI returned a response we couldn't parse.",
+    err,
+  );
+}
   const result = schema.safeParse(parsedJson);
+
   if (!result.success) {
+    console.error(
+      "Claude response failed schema validation:",
+      result.error.flatten(),
+      parsedJson,
+    );
+
     throw new AiIntegrationError(
       "The AI's response didn't match the expected structure and was rejected.",
-      result.error
+      result.error,
     );
   }
 
@@ -90,22 +119,19 @@ async function callJsonModel<T>(
 
 /**
  * Step: natural language -> structured PurchaseRequirements.
- * Never trusted blindly — validated against purchaseRequirementsSchema.
  */
 export async function extractRequirements(
-  rawRequest: string
+  rawRequest: string,
 ): Promise<PurchaseRequirementsAiOutput> {
   return callJsonModel(
     EXTRACT_REQUIREMENTS_SYSTEM_PROMPT,
     buildExtractRequirementsPrompt(rawRequest),
-    purchaseRequirementsSchema
+    purchaseRequirementsSchema,
   );
 }
 
 /**
- * Step: compare already-normalized, already-compatibility-checked products
- * and produce a recommendation. Claude only reasons about products it was
- * given here — it cannot introduce products that weren't researched.
+ * Step: compare already-normalized, already-compatibility-checked products.
  */
 export async function compareOptions(params: {
   rawRequest: string;
@@ -113,39 +139,37 @@ export async function compareOptions(params: {
   compatibilityNotes: string[];
   effectivePrices?: Record<
     string,
-    { effectivePrice?: number; shippingCost: number; shippingVerified: boolean; verifiedSavings: number; discountVerified: boolean }
+    {
+      effectivePrice?: number;
+      shippingCost: number;
+      shippingVerified: boolean;
+      verifiedSavings: number;
+      discountVerified: boolean;
+    }
   >;
 }): Promise<AiRecommendationOutput> {
   return callJsonModel(
     COMPARE_OPTIONS_SYSTEM_PROMPT,
     buildCompareOptionsPrompt(params),
-    aiRecommendationSchema
+    aiRecommendationSchema,
   );
 }
 
-// ---------------------------------------------------------------------------
-// Shopping Buddy (Phase 2)
-// ---------------------------------------------------------------------------
-
 /**
- * Step: natural language -> structured ShopRequirements. Broader than
- * extractRequirements (laptops, audio, etc., not just PC components), but
- * follows the same never-trust-blindly pattern — validated against
- * shopRequirementsSchema before use.
+ * Shopping flow: natural language -> structured shopping requirements.
  */
-export async function extractShopRequirements(rawQuery: string): Promise<ShopRequirementsAiOutput> {
+export async function extractShopRequirements(
+  rawQuery: string,
+): Promise<ShopRequirementsAiOutput> {
   return callJsonModel(
     EXTRACT_SHOP_REQUIREMENTS_SYSTEM_PROMPT,
     buildExtractShopRequirementsPrompt(rawQuery),
-    shopRequirementsSchema
+    shopRequirementsSchema,
   );
 }
 
 /**
- * Step: compare already-researched, already-compatibility-checked, already
- * effective-priced products and produce a deal recommendation. Reuses the
- * same output schema and prompt-building as compareOptions — only the
- * system prompt (deal-comparison framing) differs.
+ * Shopping flow: compare researched products and produce a recommendation.
  */
 export async function compareDeals(params: {
   rawRequest: string;
@@ -153,12 +177,18 @@ export async function compareDeals(params: {
   compatibilityNotes: string[];
   effectivePrices?: Record<
     string,
-    { effectivePrice?: number; shippingCost: number; shippingVerified: boolean; verifiedSavings: number; discountVerified: boolean }
+    {
+      effectivePrice?: number;
+      shippingCost: number;
+      shippingVerified: boolean;
+      verifiedSavings: number;
+      discountVerified: boolean;
+    }
   >;
 }): Promise<AiRecommendationOutput> {
   return callJsonModel(
     COMPARE_DEALS_SYSTEM_PROMPT,
     buildCompareOptionsPrompt(params),
-    aiRecommendationSchema
+    aiRecommendationSchema,
   );
 }
